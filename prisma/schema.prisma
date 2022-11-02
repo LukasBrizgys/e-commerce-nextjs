@@ -1,0 +1,240 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["auth", "public"]
+}
+
+model Category {
+  id        Int         @id @db.SmallInt
+  slug      String      @db.VarChar(100)
+  name      String?     @db.VarChar(100)
+  Component Component[]
+
+  @@schema("public")
+}
+
+model Brand {
+  id        Int         @id @db.SmallInt
+  name      String      @db.VarChar(100)
+  slug      String      @db.VarChar(100)
+  Component Component[]
+
+  @@schema("public")
+}
+
+model City {
+  id   Int    @id
+  name String @db.VarChar(200)
+
+  @@schema("public")
+}
+
+model Component {
+  id               Int                @id
+  name             String             @db.VarChar(255)
+  slug             String             @db.VarChar(255)
+  stock            Int                @default(5)
+  brandId          Int
+  categoryId       Int?
+  Brand            Brand              @relation(fields: [brandId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "component_brand_fkey")
+  Category         Category?          @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "component_category_fkey")
+  CartComponent    CartComponent[]
+  ComponentFeature ComponentFeature[]
+  ComponentPicture ComponentPicture[]
+  Pricing          Pricing[]
+
+  @@schema("public")
+}
+
+model ComponentFeature {
+  componentId Int
+  featureId   Int
+  value       String    @db.VarChar(255)
+  Component   Component @relation(fields: [componentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "component_feature_fkey")
+  Feature     Feature   @relation(fields: [featureId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "feature_component_fkey")
+
+  @@id([componentId, featureId])
+  @@schema("public")
+}
+
+model ComponentPicture {
+  componentId Int
+  pictureId   Int
+  Component   Component @relation(fields: [componentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "component_picture_fkey")
+  Picture     Picture   @relation(fields: [pictureId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "picture_component_fkey")
+
+  @@id([componentId, pictureId])
+  @@schema("public")
+}
+
+model Feature {
+  id               Int                @id
+  name             String             @db.VarChar(128)
+  ComponentFeature ComponentFeature[]
+
+  @@schema("public")
+}
+
+model Picture {
+  id               Int                @id
+  name             String             @db.VarChar(255)
+  ComponentPicture ComponentPicture[]
+
+  @@schema("public")
+}
+
+model Pricing {
+  id            Int
+  startDateTime DateTime  @db.Timestamptz(6)
+  originalPrice Int
+  price         Int
+  endDateTime   DateTime  @db.Timestamptz(6)
+  Component     Component @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "component_pricing_fkey")
+
+  @@id([id, startDateTime])
+  @@schema("public")
+}
+
+model audit_log_entries {
+  instance_id String?   @db.Uuid
+  id          String    @id @db.Uuid
+  payload     Json?     @db.Json
+  created_at  DateTime? @db.Timestamptz(6)
+  ip_address  String    @default("") @db.VarChar(64)
+
+  @@index([instance_id], map: "audit_logs_instance_id_idx")
+  @@schema("auth")
+}
+
+model identities {
+  id              String
+  user_id         String    @db.Uuid
+  identity_data   Json
+  provider        String
+  last_sign_in_at DateTime? @db.Timestamptz(6)
+  created_at      DateTime? @db.Timestamptz(6)
+  updated_at      DateTime? @db.Timestamptz(6)
+  users           users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([provider, id])
+  @@index([user_id])
+  @@schema("auth")
+}
+
+model instances {
+  id              String    @id @db.Uuid
+  uuid            String?   @db.Uuid
+  raw_base_config String?
+  created_at      DateTime? @db.Timestamptz(6)
+  updated_at      DateTime? @db.Timestamptz(6)
+
+  @@schema("auth")
+}
+
+model refresh_tokens {
+  instance_id          String?          @db.Uuid
+  id                   BigInt           @id @default(autoincrement())
+  token                String?          @unique(map: "refresh_tokens_token_unique") @db.VarChar(255)
+  user_id              String?          @db.VarChar(255)
+  revoked              Boolean?
+  created_at           DateTime?        @db.Timestamptz(6)
+  updated_at           DateTime?        @db.Timestamptz(6)
+  parent               String?          @db.VarChar(255)
+  session_id           String?          @db.Uuid
+  refresh_tokens       refresh_tokens?  @relation("refresh_tokensTorefresh_tokens", fields: [parent], references: [token], onDelete: NoAction, onUpdate: NoAction)
+  sessions             sessions?        @relation(fields: [session_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  other_refresh_tokens refresh_tokens[] @relation("refresh_tokensTorefresh_tokens")
+
+  @@index([instance_id])
+  @@index([instance_id, user_id])
+  @@index([parent])
+  @@index([token])
+  @@schema("auth")
+}
+
+model schema_migrations {
+  version String @id @db.VarChar(255)
+
+  @@schema("auth")
+}
+
+model sessions {
+  id             String           @id @db.Uuid
+  user_id        String           @db.Uuid
+  created_at     DateTime?        @db.Timestamptz(6)
+  updated_at     DateTime?        @db.Timestamptz(6)
+  users          users            @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  refresh_tokens refresh_tokens[]
+
+  @@schema("auth")
+}
+
+model users {
+  instance_id                 String?      @db.Uuid
+  id                          String       @id @db.Uuid
+  aud                         String?      @db.VarChar(255)
+  role                        String?      @db.VarChar(255)
+  email                       String?      @unique @db.VarChar(255)
+  encrypted_password          String?      @db.VarChar(255)
+  email_confirmed_at          DateTime?    @db.Timestamptz(6)
+  invited_at                  DateTime?    @db.Timestamptz(6)
+  confirmation_token          String?      @db.VarChar(255)
+  confirmation_sent_at        DateTime?    @db.Timestamptz(6)
+  recovery_token              String?      @db.VarChar(255)
+  recovery_sent_at            DateTime?    @db.Timestamptz(6)
+  email_change_token_new      String?      @db.VarChar(255)
+  email_change                String?      @db.VarChar(255)
+  email_change_sent_at        DateTime?    @db.Timestamptz(6)
+  last_sign_in_at             DateTime?    @db.Timestamptz(6)
+  raw_app_meta_data           Json?
+  raw_user_meta_data          Json?
+  is_super_admin              Boolean?
+  created_at                  DateTime?    @db.Timestamptz(6)
+  updated_at                  DateTime?    @db.Timestamptz(6)
+  phone                       String?      @unique @db.VarChar(15)
+  phone_confirmed_at          DateTime?    @db.Timestamptz(6)
+  phone_change                String?      @default("") @db.VarChar(15)
+  phone_change_token          String?      @default("") @db.VarChar(255)
+  phone_change_sent_at        DateTime?    @db.Timestamptz(6)
+  confirmed_at                DateTime?    @default(dbgenerated("LEAST(email_confirmed_at, phone_confirmed_at)")) @db.Timestamptz(6)
+  email_change_token_current  String?      @default("") @db.VarChar(255)
+  email_change_confirm_status Int?         @default(0) @db.SmallInt
+  banned_until                DateTime?    @db.Timestamptz(6)
+  reauthentication_token      String?      @default("") @db.VarChar(255)
+  reauthentication_sent_at    DateTime?    @db.Timestamptz(6)
+  identities                  identities[]
+  sessions                    sessions[]
+  Cart                        Cart[]
+
+  @@index([instance_id])
+  @@schema("auth")
+}
+
+model Cart {
+  id            BigInt          @id @default(autoincrement())
+  sessionId     String          @db.VarChar(255)
+  userId        String?         @db.Uuid
+  createdAt     DateTime        @db.Timestamptz(6)
+  updatedAt     DateTime?       @db.Timestamptz(6)
+  users         users?          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "UserCart_fkey")
+  CartComponent CartComponent[]
+
+  @@schema("public")
+}
+
+model CartComponent {
+  cartId      BigInt
+  componentId Int
+  quantity    Int       @db.SmallInt
+  addedAt     DateTime  @db.Timestamptz(6)
+  Cart        Cart      @relation(fields: [cartId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CartComponent_fkey")
+  Component   Component @relation(fields: [componentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ComponentCart_fkey")
+
+  @@id([cartId, componentId, quantity])
+  @@schema("public")
+}
