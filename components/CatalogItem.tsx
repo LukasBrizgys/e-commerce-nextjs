@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import Image from "next/image";
 import Link from "next/link";
 import { FullComponent } from "../src/types/Component.types";
+import { useAppDispatch } from '../src/hooks/reduxWrapperHooks';
+import { addToCart } from '../src/store/cartSlice';
 interface ICatalogItem {
     component : FullComponent
 }
 const CatalogItem = ({component} : ICatalogItem) => {
+    const dispatch = useAppDispatch();
     const [quantity, setQuantity] = useState<number>(1);
     const incrementAmount = (quantity : number) => {
         if(quantity < 9999) setQuantity(quantity + 1);
@@ -59,7 +62,7 @@ const CatalogItem = ({component} : ICatalogItem) => {
             </span>
             {
                 component.stock > 0 && component.Pricing[0] ? 
-                <button className="w-full self-end border-t-2 p-1 rounded-b-xl border-gray-500 hover:text-white hover:bg-teal-600 hover:border-white"><strong>Į KREPŠELĮ</strong></button>
+                <button onClick={() => dispatch(addToCart({componentId:component.id, quantity:quantity}))} className="w-full self-end border-t-2 p-1 rounded-b-xl border-gray-500 hover:text-white hover:bg-teal-600 hover:border-white"><strong>Į KREPŠELĮ</strong></button>
                 :
                 <button disabled={true} className="w-full self-end border-t-2 p-1 rounded-b-xl border-gray-500">Nepasiekiama</button>
             }

@@ -3,10 +3,12 @@ import {
     configureStore,
     ThunkAction
 } from '@reduxjs/toolkit';
-import modalReducer from '../src/store/modalSlice'
+import modalReducer from '../src/store/modalSlice';
+import cartReducer from '../src/store/cartSlice';
 export const store = configureStore({
     reducer:{
-        modal:modalReducer
+        modal:modalReducer,
+        cart: cartReducer
     },
 })
 export type AppDispatch = typeof store.dispatch;

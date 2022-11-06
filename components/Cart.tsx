@@ -1,23 +1,37 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Dispatch, Fragment, SetStateAction } from "react";
+import { Component, Dispatch, Fragment, SetStateAction, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../src/hooks/reduxWrapperHooks";
 import useWindowDimensions from "../src/hooks/useWindowDimensions";
+import { getCartItems, selectCart } from "../src/store/cartSlice";
+import { CartComponent } from "../src/types/CartComponent.type";
+import CartItem from "./CartItem";
+import Loader from "./Loader";
 
 interface CartProps  {
     open : boolean
     className : string
     setOpen : Dispatch<SetStateAction<boolean>>
+    setCartQuantity : Dispatch<SetStateAction<number>>
 }
-const Cart = ({open, setOpen} : CartProps) => {
+const Cart = ({open, setOpen, setCartQuantity} : CartProps) => {
     const { height, width } = useWindowDimensions();
+    const cartState = useAppSelector(selectCart);
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+      dispatch(getCartItems());
+    },[])
+    useEffect(() => {
+      setCartQuantity(cartState.totalQuantity);
+    },[cartState.totalQuantity])
     return (
         <>
         
-        <div className={open && width !== null && width > 1024 ? "absolute block top-16" : 'hidden'}>
+        <div className={open && width !== null && width > 1024 ? "absolute flex flex-col top-12 left-5" : 'hidden'}>
           
             <div className="absolute left-1 top-0 w-0 h-0 border-r-8 border-l-8 border-b-8 border-l-transparent border-r-transparent border-gray-200"></div>
             <Transition.Root
-            className={open ? 'top-2 -left-36 w-80 z-10 bg-white border-x border-y rounded-md shadow-xl absolute' : 'hidden'}
+            className={open ? 'top-2 -left-36 z-10 bg-white border-x border-y rounded-md shadow-xl absolute' : 'hidden'}
             appear={true}
             show={open}
             enter='transition ease-out duration-100'
@@ -26,9 +40,25 @@ const Cart = ({open, setOpen} : CartProps) => {
             leave='transition ease-in duration-75'
             leaveFrom='transform opacity-100 scale-100'
             leaveTo='transform opacity-0 scale-95'
-            >
-                <p className="text-center p-3">Šiuo metu krepšelis tuščias</p>
+            > 
+              <div className="w-80 h-80  no-scrollbar overflow-y-scroll">
+
+              
+                {!cartState.loading && cartState.totalQuantity === 0 && <p className="text-center p-3">Šiuo metu krepšelis tuščias</p>}
+                {cartState.loading && <Loader/>}
+                {
+                  cartState.loading === false && cartState.totalQuantity > 0 &&
+                  cartState.components.map((component : CartComponent) => 
+                    <CartItem key={component.componentId} component={component}/>
+                  )
+                }
+              </div>  
+                <div className="flex flex-col justify-center bg-white border-y-2 p-3 gap-3">
+                  <div className="self-end font-bold">Visa suma: {(cartState.totalPrice / 100).toFixed(2)}&euro;</div>
+                  <a href="/checkout" className="flex items-center font-medium justify-center p-4 rounded-md h-10 bg-teal-600 w-64 self-center text-white">Pereiti į apmokėjimą</a>
+                </div>
             </Transition.Root>
+            
         </div>
     
     <Transition.Root show={open && width !== null && width <= 1024} as={Fragment} >
@@ -83,11 +113,14 @@ const Cart = ({open, setOpen} : CartProps) => {
                       <Dialog.Title className="text-lg font-medium text-gray-900">Krepšelis</Dialog.Title>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                      {/* Replace with your content */}
-                      <div className="absolute inset-0 px-4 sm:px-6">
-                        <div className="h-full border-2 border-gray-200" aria-hidden="true" />
-                      </div>
-                      {/* /End replace */}
+                    {!cartState.loading && cartState.totalQuantity === 0 && <p className="text-center p-3">Šiuo metu krepšelis tuščias</p>}
+                    {cartState.loading && <Loader/>}
+                    {
+                      !cartState.loading && cartState.totalQuantity > 0 &&
+                      cartState.components.map((component : CartComponent) => {
+                        <CartItem key={component.componentId} component={component} mobile={true}/>
+                      })
+                    }
                     </div>
                   </div>
                 </Dialog.Panel>
