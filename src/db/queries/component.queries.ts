@@ -50,3 +50,26 @@ export const getCategoryComponentsBySlug = async(slug : string) => {
         return null;
     }
 }
+
+export const getComponentStock = async(componentId : number) => {
+    const currentDate = new Date();
+    try{
+        const component = await prisma.component.findFirst({
+            select:{stock: true},
+            where: {
+                AND:[
+                    {Pricing:{
+                        every:{
+                            startDateTime:{ lt:currentDate },
+                            endDateTime:{ gt:currentDate }
+                        }
+                    }},
+                    {id: componentId}
+                ],
+            }
+        })
+        return component ? component.stock : 0;
+    }catch(error) {
+        return 0;
+    }
+}
