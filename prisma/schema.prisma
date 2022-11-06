@@ -231,10 +231,11 @@ model CartComponent {
   cartId      BigInt
   componentId Int
   quantity    Int       @db.SmallInt
-  addedAt     DateTime  @db.Timestamptz(6)
+  createdAt   DateTime  @db.Timestamptz(6)
+  updatedAt   DateTime? @db.Timestamptz(6)
   Cart        Cart      @relation(fields: [cartId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CartComponent_fkey")
   Component   Component @relation(fields: [componentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ComponentCart_fkey")
 
-  @@id([cartId, componentId, quantity])
+  @@id([cartId, componentId])
   @@schema("public")
 }
