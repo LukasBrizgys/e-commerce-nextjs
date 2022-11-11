@@ -1,4 +1,5 @@
 import { CartComponent, Prisma } from "@prisma/client";
+import { CartComponentBase } from "../../types/CartComponent.type";
 import { prisma } from "../config/prismaConfig"
 export const getAmountInCart = async(componentId : number, cartId : bigint | number) : Promise<number | undefined> => {
     let quantityInCart : number | undefined;
@@ -122,4 +123,51 @@ export const insertOrUpdateCartItem = async(cartId : bigint, componentId : numbe
         }
     }
     
+}
+export const updateCartComponentQuantity = async(componentId : number, cartId : bigint | number, quantity : number) => {
+    try{
+        const updatedComponent : CartComponentBase = await prisma.cartComponent.update({
+            select:{
+                componentId: true,
+                quantity:true,
+                createdAt:true,
+                updatedAt:true,
+            },
+            where:{
+                cartId_componentId:{
+                    cartId: cartId,
+                    componentId: componentId
+                },
+            },
+            data:{
+                    quantity: quantity
+                }
+        })
+        return updatedComponent;
+    }catch(err) {
+        console.log(err);
+    }
+    return null;
+}
+export const deleteCartComponent = async(componentId : number, cartId : bigint | number) => {
+    try{
+        const deletedComponent : CartComponentBase = await prisma.cartComponent.delete({
+            select:{
+                componentId: true,
+                quantity:true,
+                createdAt:true,
+                updatedAt:true,
+            },
+            where: {
+                cartId_componentId:{
+                    cartId: cartId,
+                    componentId: componentId
+                }
+            }
+        })
+        return deletedComponent;
+    }catch(error) {
+        console.log(error);
+    }
+    return null;
 }
