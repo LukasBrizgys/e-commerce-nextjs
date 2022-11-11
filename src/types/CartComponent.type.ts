@@ -1,5 +1,12 @@
 import { Prisma } from "@prisma/client";
-
+export type CartComponentBase = Prisma.CartComponentGetPayload<{
+    select:{
+        componentId:true
+        createdAt:true,
+        quantity:true,
+        updatedAt:true
+    }
+}>;
 export type CartComponent = Prisma.CartComponentGetPayload<{
     select: {
         Component:{
