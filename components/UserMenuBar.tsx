@@ -4,20 +4,19 @@ import Link from "next/link";
 import { useAppDispatch } from "../src/hooks/reduxWrapperHooks";
 import { openModal } from "../src/store/modalSlice";
 import { ModalType } from "../src/enums/modal.enums";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { Menu, Transition } from "@headlessui/react";
-
+import axios from 'axios';
 const UserMenuBar = () => {
     const dispatch = useAppDispatch();
     const user = useUser();
     const [openCart, setOpenCart] = useState<boolean>(false);
     const [cartQuantity, setCartQuantity] = useState<number>(0);
-    const supabase = useSupabaseClient();
     const handleLogout = () => {
-        supabase.auth.signOut()
-        .then(() => {
-            console.log('Logged out');
+        axios.post('/api/logout').then(() => {
+            window.location.reload();
         })
+        
     }
     return (
         <>
