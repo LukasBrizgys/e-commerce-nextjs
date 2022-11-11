@@ -1,6 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Component, Dispatch, Fragment, SetStateAction, useEffect } from "react";
+import { Dispatch, Fragment, SetStateAction, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../src/hooks/reduxWrapperHooks";
 import useWindowDimensions from "../src/hooks/useWindowDimensions";
 import { getCartItems, selectCart } from "../src/store/cartSlice";
@@ -19,7 +19,10 @@ const Cart = ({open, setOpen, setCartQuantity} : CartProps) => {
     const cartState = useAppSelector(selectCart);
     const dispatch = useAppDispatch();
     useEffect(() => {
-      dispatch(getCartItems());
+      const fetchCartItems = async() => {
+          await dispatch(getCartItems())
+      }
+      fetchCartItems();
     },[])
     useEffect(() => {
       setCartQuantity(cartState.totalQuantity);
@@ -41,7 +44,7 @@ const Cart = ({open, setOpen, setCartQuantity} : CartProps) => {
             leaveFrom='transform opacity-100 scale-100'
             leaveTo='transform opacity-0 scale-95'
             > 
-              <div className="w-80 h-80  no-scrollbar overflow-y-scroll">
+              <div className="w-80 max-h-80  no-scrollbar overflow-y-scroll">
 
               
                 {!cartState.loading && cartState.totalQuantity === 0 && <p className="text-center p-3">Šiuo metu krepšelis tuščias</p>}
@@ -52,11 +55,13 @@ const Cart = ({open, setOpen, setCartQuantity} : CartProps) => {
                     <CartItem key={component.componentId} component={component}/>
                   )
                 }
-              </div>  
+              </div>
+              { cartState.totalQuantity !== 0 &&
                 <div className="flex flex-col justify-center bg-white border-y-2 p-3 gap-3">
                   <div className="self-end font-bold">Visa suma: {(cartState.totalPrice / 100).toFixed(2)}&euro;</div>
                   <a href="/checkout" className="flex items-center font-medium justify-center p-4 rounded-md h-10 bg-teal-600 w-64 self-center text-white">Pereiti į apmokėjimą</a>
                 </div>
+                }
             </Transition.Root>
             
         </div>
@@ -113,14 +118,16 @@ const Cart = ({open, setOpen, setCartQuantity} : CartProps) => {
                       <Dialog.Title className="text-lg font-medium text-gray-900">Krepšelis</Dialog.Title>
                     </div>
                     <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                    {!cartState.loading && cartState.totalQuantity === 0 && <p className="text-center p-3">Šiuo metu krepšelis tuščias</p>}
-                    {cartState.loading && <Loader/>}
-                    {
-                      !cartState.loading && cartState.totalQuantity > 0 &&
-                      cartState.components.map((component : CartComponent) => {
-                        <CartItem key={component.componentId} component={component} mobile={true}/>
+                     <>
+                      {!cartState.loading && cartState.totalQuantity === 0 && <p className="text-center p-3">Šiuo metu krepšelis tuščias</p>}
+                      {cartState.loading && <Loader/>}
+                      {
+                        !cartState.loading && cartState.totalQuantity > 0 &&
+                        cartState.components.map((component : CartComponent) => {
+                          <CartItem key={component.componentId} component={component} mobile={true}/>
                       })
-                    }
+                      }
+                    </>  
                     </div>
                   </div>
                 </Dialog.Panel>

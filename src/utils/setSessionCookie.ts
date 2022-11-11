@@ -12,7 +12,7 @@ const setSessionCookie = async(req : NextApiRequest, res : NextApiResponse) : Pr
     let expiryDate = new Date();
     const month = (expiryDate.getMonth() + 1) % 12;
     expiryDate.setMonth(month);
-    setCookie('sessionId', sessionId, {req, res, httpOnly:true, path:'/', expires: expiryDate});
+    setCookie('sessionId', sessionId, {req, res, httpOnly:true, path:'/', expires: expiryDate, sameSite:'lax'});
     return sessionId;
 }
 export default setSessionCookie;
