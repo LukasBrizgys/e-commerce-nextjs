@@ -52,7 +52,7 @@ const RegisterModal = () => {
         }
     })
     return (
-        <Transition.Root show={modal.type === ModalType.register && modal.open} as={Fragment}>
+        <Transition.Root show={modal.type === ModalType.register && modal.open} as="div">
       <Dialog as="div" initialFocus={completeButtonRef} className="relative z-10" onClose={() => dispatch(closeModal())}>
         <Transition.Child
           as={Fragment}

@@ -55,7 +55,7 @@ const LoginModal = () => {
         }
     })
     return(
-    <Transition.Root show={modal.type === ModalType.login && modal.open} as={Fragment}>
+    <Transition.Root show={modal.type === ModalType.login && modal.open} as="div">
       <Dialog as="div" initialFocus={completeButtonRef} className="relative z-10" onClose={() => {dispatch(closeModal()); formik.resetForm()}}>
         <Transition.Child
           as={Fragment}
