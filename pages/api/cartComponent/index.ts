@@ -7,8 +7,14 @@ import { CartComponent } from "../../../src/types/CartComponent.type";
 import calculateQuantity from "../../../src/utils/calculateQuantity";
 export default async function handler(req : NextApiRequest, res : NextApiResponse) {
     const supabase = createServerSupabaseClient({ req, res });
-    const user = await supabase.auth.getUser();
-    const cartId = await getCartId(req, res, user);
+    let cartId;
+    try{
+        const user = await supabase.auth.getUser();
+        if(user.error) throw new Error(user.error.message);
+        cartId = await getCartId(req, res, user);
+    }catch(err) {
+        cartId = await getCartId(req, res);
+    }
     if(!cartId) return res.status(404).send({ status: '404', message: 'Krepšelis nerastas' });
     
     
