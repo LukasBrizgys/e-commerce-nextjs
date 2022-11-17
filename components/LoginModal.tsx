@@ -122,13 +122,13 @@ const LoginModal = () => {
                     ref={completeButtonRef}
                     disabled={loading}
                     type="submit"
-                    className="mb-2 h-12 sm:mb-0 sm:px-8 inline-flex w-full justify-center items-center rounded-md border border-gray-300 bg-white px-4 py-3 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-teal-600 sm:mt-0 sm:ml-3 sm:w-32 sm:h-10 sm:text-sm"
+                    className="mb-2 h-12 sm:mb-0 sm:px-8 flex w-full justify-center items-center rounded-md border border-gray-300 bg-white hover:bg-gray-50 px-4 py-2 text-base font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-600 sm:mt-0 sm:ml-3 sm:w-32 sm:h-10 sm:text-sm"
                   >
                     {loading ? <Loader/> : 'Prisijungti'}
                   </button>
                   <button
                     type="button"
-                    className=" mt-2 h-12 sm:mt-0 sm:px-8 inline-flex w-full justify-center items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-32 sm:h-10 sm:text-sm"
+                    className="mb-2 h-12 sm:mb-0 sm:px-8 flex w-full justify-center items-center rounded-md border border-gray-300 bg-white hover:bg-gray-50 px-4 py-2 text-base font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-600 sm:mt-0 sm:ml-3 sm:w-32 sm:h-10 sm:text-sm"
                     onClick={() => {dispatch(closeModal()); formik.resetForm()}}
                   >
                     Atšaukti
