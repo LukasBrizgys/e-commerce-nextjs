@@ -4,11 +4,6 @@ import catchAsyncErrors from "../src/lib/catchAsyncErrors";
 import stripe from "../src/lib/getStripeServerside";
 import { prisma } from '../src/db/config/prismaConfig';
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
 export interface IPaymentIntentMetadata {
     cartId: number,
     componentids: number[],
@@ -87,6 +82,5 @@ const captureCharge = catchAsyncErrors(async (req: NextApiRequest, res : NextApi
 
                 return res.status(200).send({status:'200', message:'Charge successful'});
             }
-            return res.status(200).send({status:'200', message:'Checkout completed'});
 })
 export default captureCharge;
