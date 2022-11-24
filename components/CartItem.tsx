@@ -1,6 +1,8 @@
 import Image from "next/image";
 import React from 'react';
+import { AlertType } from "../src/enums/alert.enums";
 import { useAppDispatch } from "../src/hooks/reduxWrapperHooks";
+import { showAlert } from "../src/store/alertSlice";
 import { deleteCartItem, setQuantity } from "../src/store/cartSlice";
 import { CartComponent } from "../src/types/CartComponent.type";
 interface ICartItem {
@@ -12,14 +14,27 @@ const CartItem = ({ component, mobile } : ICartItem) => {
     const increment = () => {
         if(component.quantity < 9999){
             const newQuantity = component.quantity + 1;
-            dispatch(setQuantity({componentId: component.componentId, quantity:newQuantity}))
+            dispatch(setQuantity({componentId: component.componentId, quantity:newQuantity})).then((value) => {
+                if(value.meta.requestStatus === 'rejected') {
+                    if(value.payload === 409) {
+                        dispatch(showAlert({message:'Per didelis kiekis', type: AlertType.warning}))
+                    }else{
+                        dispatch(showAlert({message:'Nepavyko pridėti', type: AlertType.warning}))
+                    }
+                    
+                }
+            })
         }
     }
 
     const decrement = () => {
         if(component.quantity > 1) {
             const newQuantity = component.quantity - 1;
-            dispatch(setQuantity({ componentId: component.componentId, quantity: newQuantity}));
+            dispatch(setQuantity({ componentId: component.componentId, quantity: newQuantity})).then((value) => {
+                if(value.meta.requestStatus === 'rejected') {
+                    dispatch(showAlert({message:'Blogas kiekis', type:AlertType.warning}))
+                }
+            })
         }
     }
     return (
@@ -52,7 +67,7 @@ const CartItem = ({ component, mobile } : ICartItem) => {
                     </div>
                     <div>X</div>
                     <div>
-                        {(component.Component.Pricing[0].price / 100).toFixed(2)}&euro;
+                        {(Number(component.Component.Pricing[0].price) / 100).toFixed(2)}&euro;
                     </div>
                 </div>
             </div>
