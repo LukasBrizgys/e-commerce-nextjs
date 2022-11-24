@@ -13,10 +13,19 @@ const updateCheckoutEmail = catchAsyncErrors(async (req : NextApiRequest, res : 
     const cartId = await getCartId(sessionCookie?.toString()!, user.data.user);
     if(!cartId) return res.status(400).send({status: '400', message:'Cart not found'});
     const paymentIntentCookie = getCookie('paymentIntentId', {req,res});
-            if(!req.body.email || !isValidEmail(req.body.email)) return res.status(422).send({status: '422', message:'Įveskite tinkamą el. pašo adresą'});
-            const emailInDatabase = await checkUserInDatabase(req.body.email);
-            if(emailInDatabase && user.data.user === null) return res.status(422).send({message: 'Šis el.paštas jau egzistuoja. Prisijunkite'});
-            if(emailInDatabase !== user.data.user?.email) return res.status(422).send({message: 'Įveskite šios paskyros el. paštą'});
+            if(!req.body.email || !isValidEmail(req.body.email)){
+                res.status(422).send({status: '422', message:'Įveskite tinkamą el. pašo adresą'});
+                return;
+            }
+            const emailInDatabase = await checkUserInDatabase(req.body.email.toLowerCase());
+            if(emailInDatabase && user.data.user === null) {
+                res.status(422).send({message: 'Šis el.paštas jau egzistuoja. Prisijunkite'});
+                return;
+            } 
+            if(emailInDatabase !== user.data.user?.email){
+                res.status(422).send({message: 'Įveskite šios paskyros el. paštą'});
+                return;
+            }
             if(paymentIntentCookie) {
                 await stripe.paymentIntents.update(paymentIntentCookie?.toString(), {
                 receipt_email:req.body.email,
