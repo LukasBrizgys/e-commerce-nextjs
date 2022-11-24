@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import { Dispatch, Fragment, SetStateAction, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../src/hooks/reduxWrapperHooks";
 import useWindowDimensions from "../src/hooks/useWindowDimensions";
@@ -59,7 +60,7 @@ const Cart = ({open, setOpen, setCartQuantity} : CartProps) => {
               { cartState.totalQuantity !== 0 &&
                 <div className="flex flex-col justify-center bg-white border-y-2 p-3 gap-3">
                   <div className="self-end font-bold">Visa suma: {(cartState.totalPrice / 100).toFixed(2)}&euro;</div>
-                  <a href="/checkout" className="flex items-center font-medium justify-center p-4 rounded-md h-10 bg-teal-600 w-64 self-center text-white">Pereiti į apmokėjimą</a>
+                  <Link href="/checkout/" className="flex items-center font-medium justify-center p-4 rounded-md h-10 bg-teal-600 w-64 self-center text-white">Pereiti į apmokėjimą</Link>
                 </div>
                 }
             </Transition.Root>
