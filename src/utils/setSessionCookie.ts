@@ -15,4 +15,5 @@ const setSessionCookie = async(req : NextApiRequest, res : NextApiResponse) : Pr
     setCookie('sessionId', sessionId, {req, res, httpOnly:true, path:'/', expires: expiryDate, sameSite:'lax'});
     return sessionId;
 }
+export const getRandomUUID = () => crypto.randomUUID();
 export default setSessionCookie;
