@@ -1,0 +1,36 @@
+type PaymentIntentMetadata = {
+    cartId: string,
+    componentids: string,
+    email:string,
+    userId: string
+}
+export type PaymentIntentType = {
+    id: string,
+    object: string,
+    amount: number,
+    amount_capturable: number,
+    amount_details:any,
+    application:any,
+    application_fee_amount:any,
+    automatic_payment_methods:any,
+    canceled_at:any,
+    cancellation_reason:any,
+    charges:Object,
+    amount_received: number,
+    capture_method: string,
+    client_secret: string,
+    confirmation_method: string,
+    customer: any,
+    description:any,
+    invoice: any,
+    last_payment_error:any,
+    livemode:boolean,
+    next_action:null,
+    on_behalf_of:null,
+    created: number,
+    currency: string,
+    metadata : PaymentIntentMetadata,
+    payment_method:string,
+    receipt_email: string,
+    status: string
+}
