@@ -1,6 +1,9 @@
-const Loader = () => {
+interface ILoader {
+    className? : string
+}
+const Loader = ({ className } : ILoader) => {
     return (
-    <div className="w-20 h-20 overflow-auto flex justify-center items-center">
+    <div className={className ? className : 'w-20 h-20 overflow-auto flex justify-center items-center'}>
         <svg className="w-5/6 h-5/6" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
             <g transform="rotate(0 50 50)">
             <rect x="40" y="28" rx="0" ry="0" width="20" height="2" fill="#115e59">
