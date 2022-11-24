@@ -4,6 +4,8 @@ import Link from "next/link";
 import { FullComponent } from "../src/types/Component.types";
 import { useAppDispatch } from '../src/hooks/reduxWrapperHooks';
 import { addToCart } from '../src/store/cartSlice';
+import { showAlert } from '../src/store/alertSlice';
+import { AlertType } from '../src/enums/alert.enums';
 interface ICatalogItem {
     component : FullComponent
 }
@@ -22,6 +24,13 @@ const CatalogItem = ({component} : ICatalogItem) => {
         if(value >= 0 && value < 9999) {
             setQuantity(value);
         }
+    }
+    const addToCartWrapper = () => {
+        dispatch(addToCart({componentId:component.id, quantity:quantity})).then((value) => {
+            if(value.meta.requestStatus === 'rejected') {
+                dispatch(showAlert({message:'Nepavyko pridėti į krepšelį', type: AlertType.failure}));
+            }
+        })
     }
     return (
         <div className="mt-5 overflow-hidden rounded-xl pt-4 bg-white shadow-md duration-200 hover:scale-105 hover:shadow-xl flex-initial basis-72">
@@ -50,19 +59,19 @@ const CatalogItem = ({component} : ICatalogItem) => {
             </span>
             <span className="flex justify-center items-center">
                 {component.Pricing[0] && component.Pricing[0].originalPrice === component.Pricing[0].price &&
-                    <span className='text-lg p-2'><strong>{component.Pricing[0].price / 100}&euro;</strong></span>
+                    <span className='text-lg p-2'><strong>{(Number(component.Pricing[0].price) / 100).toFixed(2)}&euro;</strong></span>
                 }
 
                 {component.Pricing[0] && component.Pricing[0].originalPrice !== component.Pricing[0].price &&
                     <span className="">
-                        <div className='text-lg p-2 '><strong>{(component.Pricing[0].price / 100).toFixed(2)}&euro;</strong></div>
-                        <div className='text-lg p-2 text-red-800 line-through'><strong>{(component.Pricing[0].originalPrice / 100).toFixed(2)}&euro;</strong></div>
+                        <div className='text-lg p-2 '><strong>{(Number(component.Pricing[0].price) / 100).toFixed(2)}&euro;</strong></div>
+                        <div className='text-lg p-2 text-red-800 line-through'><strong>{(Number(component.Pricing[0].originalPrice) / 100).toFixed(2)}&euro;</strong></div>
                     </span>
                 }
             </span>
             {
                 component.stock > 0 && component.Pricing[0] ? 
-                <button onClick={() => dispatch(addToCart({componentId:component.id, quantity:quantity}))} className="w-full self-end border-t-2 p-1 rounded-b-xl border-gray-500 hover:text-white hover:bg-teal-600 hover:border-white"><strong>Į KREPŠELĮ</strong></button>
+                <button onClick={() => addToCartWrapper()} className="w-full self-end border-t-2 p-1 rounded-b-xl border-gray-500 hover:text-white hover:bg-teal-600 hover:border-white"><strong>Į KREPŠELĮ</strong></button>
                 :
                 <button disabled={true} className="w-full self-end border-t-2 p-1 rounded-b-xl border-gray-500">Nepasiekiama</button>
             }
