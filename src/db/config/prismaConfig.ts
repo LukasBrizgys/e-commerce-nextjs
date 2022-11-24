@@ -9,6 +9,11 @@ declare global {
 export const prisma =
   global.prisma ||
   new PrismaClient({
+    datasources:{
+      db:{
+        url: process.env.DATABASE_PGBOUNCER_URL
+      },
+    },
     log: ['query'],
   })
 
