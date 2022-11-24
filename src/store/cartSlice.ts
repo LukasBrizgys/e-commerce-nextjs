@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import { CartComponent, CartComponentBase } from "../types/CartComponent.type";
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { RootState } from "../store";
 import { HYDRATE } from "next-redux-wrapper";
+import calculateTotalPrice from "../utils/calculateTotalPrice";
 export interface IAddSuccessful {
     status: string,
     message: CartComponent
@@ -47,9 +48,15 @@ const initialState : CartState = {
 }
 export const addToCart = createAsyncThunk(
     'cart/addToCart',
-    async({componentId, quantity} : ComponentToAddOrUpdate) => {
+    async({componentId, quantity} : ComponentToAddOrUpdate, { rejectWithValue }) => {
+        try{
             const response : AxiosResponse<IAddSuccessful> = await axios.post('/api/cartComponent',{componentId, quantity});
             return response.data;
+        }catch(_error) {
+            const error = (_error as AxiosError);
+            return rejectWithValue(error.response?.data); 
+        }
+            
         
 
     }
@@ -61,23 +68,33 @@ export const deleteCartItem = createAsyncThunk(
         return response.data;
     }
 )
-export const setQuantity = createAsyncThunk<IUpdateSuccessful, ComponentUpdate, {rejectValue : ComponentUpdate}>(
+export const setQuantity = createAsyncThunk(
     'cart/setQuantity',
-    async({ componentId, quantity} : ComponentUpdate, { rejectWithValue}) => {
+    async({ componentId, quantity} : ComponentUpdate, { rejectWithValue }) => {
         try{
             const response : AxiosResponse<IUpdateSuccessful> = await axios.patch(`/api/cartComponent/${componentId}/quantity/${quantity}`)
             return response.data;
-        }catch(error) {
-            return rejectWithValue({ componentId, quantity});
+        }catch(_error) {
+            const error = (_error as AxiosError) ;
+            return rejectWithValue(error.response?.status);
         }
     }
 )
-const calculateTotalPrice = (items : CartComponent[]) => items.reduce((acc, current) => acc + current.Component.Pricing[0].price * current.quantity,0)
-const calculateTotalQuantity = (items : CartComponent[]) => items.reduce((acc, current) => acc + current.quantity,0)
+const calculateTotalQuantity = (items : CartComponent[]) => {
+    if(!items) return 0;
+    const totalQuantity = items.reduce((acc, current) => acc + current.quantity,0);
+    return totalQuantity;
+};
 export const getCartItems = createAsyncThunk('cart/getCartItems', 
-    async() => {
-        const response : AxiosResponse<IGetSuccessful> = await axios.get('/api/cartComponent');
-        return response.data;
+    async(_, {rejectWithValue}) => {
+        try{
+            const response : AxiosResponse<IGetSuccessful> = await axios.get('/api/cartComponent');
+            return response.data;
+        }catch(_error) {
+            const error = (_error as AxiosError);
+            return rejectWithValue(error.response?.data);
+        }
+        
     })
 export const cartSlice = createSlice({
     name: 'cart',
@@ -110,21 +127,21 @@ export const cartSlice = createSlice({
         .addCase(addToCart.pending, (state : CartState) => {
             state.loading = true;
         })
-        .addCase(getCartItems.fulfilled, (state : CartState, action : PayloadAction<IGetSuccessful>) => {
+        .addCase(getCartItems.fulfilled, (state : CartState, action) => {
             state.components = action.payload.message;
             state.totalPrice = calculateTotalPrice(action.payload.message);
             state.totalQuantity = calculateTotalQuantity(action.payload.message);
             state.loading = false;
         })
         .addCase(getCartItems.pending, (state : CartState) => {
-            
             state.loading = true;
         })
         .addCase(getCartItems.rejected, (state : CartState) => {
             state.loading = false;
         })
         .addCase(deleteCartItem.fulfilled, (state : CartState, action : PayloadAction<IRemoveSuccessful>) => {
-            state.components = state.components.filter((component : CartComponent) => component.componentId !== action.payload.message.componentId);
+            const index = state.components.findIndex((component : CartComponent) => component.componentId === action.payload.message.componentId);
+            state.components.splice(index, 1);
             state.totalPrice = calculateTotalPrice(state.components);
             state.totalQuantity = calculateTotalQuantity(state.components);
             state.loading = false;
@@ -145,7 +162,7 @@ export const cartSlice = createSlice({
         .addCase(setQuantity.pending, (state : CartState) => {
             state.loading = true;
         })
-        .addCase(setQuantity.rejected, (state: CartState) => {
+        .addCase(setQuantity.rejected, (state: CartState, action) => {
             state.loading = false;
         })
         .addDefaultCase((state) => {
