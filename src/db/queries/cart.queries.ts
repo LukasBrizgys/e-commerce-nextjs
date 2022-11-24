@@ -1,21 +1,20 @@
-import { UserResponse } from "@supabase/gotrue-js";
-import { getCookie } from "cookies-next";
-import { NextApiRequest, NextApiResponse } from "next";
+import { User } from "@supabase/auth-helpers-react";
 import  { prisma } from '../config/prismaConfig';
-export const getCartId = async(req : NextApiRequest, res : NextApiResponse, user? : UserResponse) : Promise<BigInt | undefined> => {
+
+export const getCartId = async(sessionId : string, user : User | null) : Promise<BigInt | undefined> => {
+    
     let cartId : BigInt | undefined;
-    if(user?.data.user?.id) {
+    if(user) {
         const cart = await prisma.cart.findFirst({
             select:{id:true},
-            where:{userId : user.data.user.id}
+            where:{userId : user.id}
         })
         cartId = cart?.id;
         return cartId;
     }else{
-        const sessionCookie = getCookie('sessionId', {req, res});
         const guestCart = await prisma.cart.findFirst({
             select: {id: true},
-            where:{sessionId: sessionCookie?.toString()}
+            where:{sessionId: sessionId}
         })
         cartId = guestCart?.id;
         return cartId;

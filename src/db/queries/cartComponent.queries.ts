@@ -23,12 +23,55 @@ export const getCartComponent = async(componentId : number, cartId : bigint | nu
         const cartComponent = await prisma.cartComponent.findFirstOrThrow({
             where:{ componentId: componentId, cartId: cartId},
         })
-        return cartComponent;
+        return JSON.parse(JSON.stringify(
+            cartComponent,
+            (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+          ));;
     }catch(error) {
         return null;
     }
 }
-export const getAllCartComponents = async(cartId : bigint | number) => {
+export const findAllCartComponents = async() => {
+    const currentDate : Date = new Date();
+    try{
+        const cartComponents = await prisma.cartComponent.findMany({
+            select: {
+                Component:{
+                    select:{
+                        name:true,
+                        slug:true,
+                        Category:true,
+                        Brand:true,
+                        ComponentPicture:{
+                            include:{Picture:true},
+                            take:1
+                        },
+                        Pricing:{
+                            where:{
+                                AND:[
+                                    {startDateTime:{ lt:currentDate }},
+                                    {endDateTime:{ gt:currentDate }}
+                                ]
+                            }
+                        }
+                    },
+                    
+                },
+                componentId:true,
+                quantity:true,
+                createdAt:true
+            },
+        })
+        return JSON.parse(JSON.stringify(
+            cartComponents,
+            (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+          ));
+    }catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+export const findCartComponentsByCartId = async(cartId : bigint | number) => {
     const currentDate : Date = new Date();
     try{
         const cartComponents = await prisma.cartComponent.findMany({
@@ -62,9 +105,13 @@ export const getAllCartComponents = async(cartId : bigint | number) => {
                 cartId:cartId
             }
         })
-        return cartComponents;
+        return JSON.parse(JSON.stringify(
+            cartComponents,
+            (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+          ));
     }catch(err) {
         console.log(err);
+        return null
     }
 }
 export const insertOrUpdateCartItem = async(cartId : bigint, componentId : number, amount : number, oldAmount? : number) => {
@@ -116,7 +163,10 @@ export const insertOrUpdateCartItem = async(cartId : bigint, componentId : numbe
                 },
                 
             })
-            return component;
+            return JSON.parse(JSON.stringify(
+                component,
+                (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+              ));
     }catch(error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             return error;
@@ -143,7 +193,10 @@ export const updateCartComponentQuantity = async(componentId : number, cartId : 
                     quantity: quantity
                 }
         })
-        return updatedComponent;
+        return JSON.parse(JSON.stringify(
+            updatedComponent,
+            (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+          ));
     }catch(err) {
         console.log(err);
     }
@@ -165,7 +218,10 @@ export const deleteCartComponent = async(componentId : number, cartId : bigint |
                 }
             }
         })
-        return deletedComponent;
+        return JSON.parse(JSON.stringify(
+            deletedComponent,
+            (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+          ));
     }catch(error) {
         console.log(error);
     }
