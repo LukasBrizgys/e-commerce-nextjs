@@ -22,7 +22,7 @@ const UserMenuBar = () => {
         <>
             <div className="right-0 flex-wrap flex gap-6 items-center justify-center pr-2 py-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
 
-                <Link href="#" className="text-gray-900 h-10 text-lg font-medium hover:bg-teal-100 hover:bg-opacity-40 flex justify-center items-center px-3 py-2 rounded-md">
+                <Link href="/suderinamumas" className="text-gray-900 h-10 text-lg font-medium hover:bg-teal-100 hover:bg-opacity-40 flex justify-center items-center px-3 py-2 rounded-md">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-1">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                     </svg>
@@ -52,6 +52,7 @@ const UserMenuBar = () => {
                     </svg>
                     Registruotis
                     </button>
+                
                 </>    
                 }
                 {
@@ -86,8 +87,18 @@ const UserMenuBar = () => {
                     className='hover:bg-teal-100 hover:bg-opacity-40 group flex w-full items-center rounded-md px-2 py-2 text-md font-medium'
                   >
                     Užsakymai
-                  </button>
+                  </button> 
               </Menu.Item>
+              { user?.role === 'service_role' &&
+                <Menu.Item>
+                    <Link href="/admin/dashboard/" legacyBehavior prefetch={false}>
+                        <a className="hover:bg-teal-100 hover:bg-opacity-40 group flex w-full items-center rounded-md px-2 py-2 text-md font-medium">
+                        Administratoriaus meniu
+                        </a>
+                    </Link>
+
+                </Menu.Item>
+                }
             </div>
           </Menu.Items>
         </Transition>

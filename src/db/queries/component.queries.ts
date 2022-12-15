@@ -1,4 +1,5 @@
-import { FullComponent } from "../../types/Component.types";
+import { IAttributes, MultipleAdd } from "../../../pages/suderinamumas";
+import { FullComponent, FullComponentWithFeatures } from "../../types/Component.types";
 import { prisma } from "../config/prismaConfig";
 interface IBrandQuery {
     brandId:{
@@ -180,7 +181,94 @@ export const getCategoryComponentsBySlug = async(slug : string, minPrice? : numb
         return null;
     }
 }
+export const getCompatibleIds = async(category : number, compatibilities : IAttributes) => {
+    try{
+        let query: {componentId: number}[] = [];
+        const result : number[] = [];
+        let compatibilityString : string = '';
+        Object.entries(compatibilities).forEach((entry) => {
+            if(entry[1]) compatibilityString += `*${entry[1]}*` + ' ';
+        })
+        compatibilityString = compatibilityString.trim().replace(/\s/g, ' | ');
+        console.log(compatibilityString);
+        query = compatibilityString === '' ? await prisma.$queryRaw`SELECT DISTINCT ON (ft."componentId") ft."componentId" FROM fulltext as ft
+        WHERE ft."categoryId" = ${category}` :
+        await prisma.$queryRaw`SELECT DISTINCT ON (ft."componentId") ft."componentId" FROM fulltext as ft
+        WHERE tsv @@ to_tsquery(${compatibilityString}) AND ft."categoryId" = ${category}`;
+        query.forEach((entry) => {
+            result.push(entry.componentId)
+        }) 
 
+        return result;
+    }catch(error){
+        console.log(error);
+    }
+    
+}
+export const addMultipleToCart = async(ids : MultipleAdd[], cartId : number) => {
+    try{
+        await prisma.cartComponent.createMany({
+            data:[
+              
+
+            ]
+        })
+    }catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+export const getComponentsWithFeatures = async(idArray : number[] | undefined) => {
+    const currentDate = new Date();
+    if(!idArray) return [];
+    try{
+const componentsWithFeatures : FullComponentWithFeatures[] = await prisma.component.findMany({
+        include:{
+            Brand:true,
+            Category:true,
+            Pricing:{
+                take:1,
+                select:{
+                    price:true,
+                    originalPrice:true
+                }
+            },
+            
+            ComponentPicture:{
+                take:1,
+                select:{
+                    Picture:{
+                        select:{name:true}
+                    }
+                }
+            },
+            ComponentFeature:{
+                select:{
+                    Feature:{
+                        select:{name:true}
+                    },
+                    value:true
+                }
+            }
+        },
+        where:{
+            AND:[
+                {Pricing:{every:{startDateTime:{lt:currentDate}, endDateTime:{ gt:currentDate }}}},
+                {id:{in:idArray}},
+                
+            ]
+        }
+    })
+    return JSON.parse(JSON.stringify(
+        componentsWithFeatures,
+        (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+      ));
+    }catch(err) {
+        console.log(err);
+        return null;
+    }
+    
+}
 export const getComponentStock = async(componentId : number) => {
     const currentDate = new Date();
     try{

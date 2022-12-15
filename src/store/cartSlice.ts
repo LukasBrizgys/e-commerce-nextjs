@@ -61,6 +61,17 @@ export const addToCart = createAsyncThunk(
 
     }
 )
+export const addToCartMultiple = createAsyncThunk(
+    'cart/addToCartMultiple',
+    async(componentsToAdd : ComponentToAddOrUpdate[], {rejectWithValue}) => {
+        try{
+
+        }catch(_error) {
+            const error = (_error as AxiosError);
+            return rejectWithValue(error.response?.data);
+        }
+    }
+)
 export const deleteCartItem = createAsyncThunk(
     'cart/deleteCartItem',
     async( componentId : number, thunkAPI ) => {

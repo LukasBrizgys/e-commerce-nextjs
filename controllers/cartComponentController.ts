@@ -39,6 +39,24 @@ const getAllCartComponentsByCartId = catchAsyncErrors(
             .send({status: '200', message: cartComponents})
     }
 )
+const addMultipleToCart = catchAsyncErrors(async(req : NextApiRequest, res : NextApiResponse) => {
+    const supabase = createServerSupabaseClient({req, res});
+    const sessionCookie = getCookie('sessionId', {req, res});
+    const user = await supabase
+        .auth
+        .getUser();
+    const cartId = await getCartId(
+        sessionCookie
+            ?.toString()!,
+        user.data.user
+    );
+    if (!cartId) 
+        return res
+            .status(400)
+            .send({status: '400', message: 'Cart not found'});
+
+    
+})
 const addCartComponent = catchAsyncErrors(async (req
 : NextApiRequest, res
 : NextApiResponse) => {

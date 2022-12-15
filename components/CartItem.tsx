@@ -39,8 +39,8 @@ const CartItem = ({ component, mobile } : ICartItem) => {
     }
     return (
         <>
-        <div className={mobile ? "hidden" : "flex items-center justify-between gap-2 h-28 py-4 px-2 border-y relative"}>
-            <svg onClick={() => dispatch(deleteCartItem(component.componentId))} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="absolute mt-0 hover:cursor-pointer top-1 left-72 w-6 h-6">
+        <div className={mobile ? "flex items-center justify-between gap-2 border-y py-4 relative w-full" : "flex items-center justify-between gap-2 h-28 py-4 px-2 border-y relative"}>
+            <svg onClick={() => dispatch(deleteCartItem(component.componentId))} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={mobile ? "absolute hover:cursor-pointer right-0 top-1 w-6 h-6" : "absolute mt-0 hover:cursor-pointer top-1 left-72 w-6 h-6"}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
 
@@ -72,10 +72,6 @@ const CartItem = ({ component, mobile } : ICartItem) => {
                 </div>
             </div>
         </div>
-
-            <div className={mobile ? "flex" : "hidden"}>
-                sssssss
-            </div>
         </>
     )
 }

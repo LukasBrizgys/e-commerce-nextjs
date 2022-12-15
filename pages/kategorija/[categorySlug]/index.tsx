@@ -65,8 +65,8 @@ const Catalog = (props: InferGetServerSidePropsType<typeof getServerSideProps>) 
   },[props.components]);
 
   useEffect(() => {
-    refreshData();
-    setIsLoading(true);
+      refreshData();
+      setIsLoading(true);
   },[minPrice,maxPrice]);
   return (
       <>
@@ -76,7 +76,7 @@ const Catalog = (props: InferGetServerSidePropsType<typeof getServerSideProps>) 
         </Head>
         <div className="flex">
           <div className="mt-12 mx-5 flex  flex-col items-center p-10 bg-gray-100 rounded-md self-start">
-              <Slider min={0} max={Math.ceil(props.maxCategoryPrice / 100)} currentMax={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
+              <Slider min={0} max={Math.ceil(props.maxCategoryPrice / 100)} currentMax={maxPrice || Math.ceil(props.maxCategoryPrice / 100)} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
           </div>
           <div className="flex gap-6 justify-center flex-wrap items-stretch">
             {

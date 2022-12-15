@@ -45,7 +45,9 @@ export const getServerSideProps : GetServerSideProps = async(ctx : GetServerSide
         })
         setCookie('paymentIntentId', paymentIntent.id, {req:ctx.req, res:ctx.res, path:'/', httpOnly: true, sameSite:'lax', expires:new Date(2147483647 * 1000)})
         }else{
-            paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentCookie.toString());
+            paymentIntent = await stripe.paymentIntents.update(paymentIntentCookie.toString(), {
+                amount:totalPrice
+            })
         }
         if(user.data.user) {
             userEmail = user.data.user.email

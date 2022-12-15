@@ -114,23 +114,31 @@ const Cart = ({open, setOpen, setCartQuantity} : CartProps) => {
                       </button>
                     </div>
                   </Transition.Child>
-                  <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+                  <div className="flex h-full flex-col bg-white py-6 shadow-xl">
                     <div className="px-4 sm:px-6">
                       <Dialog.Title className="text-lg font-medium text-gray-900">Krepšelis</Dialog.Title>
                     </div>
-                    <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                     <>
+                    <div className="flex flex-col overflow-y-scroll justify-start relative mt-6">
+                     
                       {!cartState.loading && cartState.totalQuantity === 0 && <p className="text-center p-3">Šiuo metu krepšelis tuščias</p>}
                       {cartState.loading && <Loader/>}
                       {
                         !cartState.loading && cartState.totalQuantity > 0 &&
-                        cartState.components.map((component : CartComponent) => {
+                        cartState.components.map((component : CartComponent) => (
                           <CartItem key={component.componentId} component={component} mobile={true}/>
-                      })
+                          ))
                       }
-                    </>  
+                    
                     </div>
+                    { cartState.totalQuantity !== 0 && !cartState.loading &&
+                      <div className="flex flex-col bg-white border-y-2 p-3 gap-3">
+                        <div className="self-end font-bold">Visa suma: {(cartState.totalPrice / 100).toFixed(2)}&euro;</div>
+                        <Link href="/checkout/" className="flex items-center font-medium justify-center p-4 rounded-md h-10 bg-teal-600 w-64 self-center text-white">Pereiti į apmokėjimą</Link>
+                      </div>
+                    }
                   </div>
+                  
+
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -8,6 +8,8 @@ import { ModalType } from "../src/enums/modal.enums";
 import TextField from "./TextField";
 import axios from 'axios';
 import Loader from "./Loader";
+import { showAlert } from "../src/store/alertSlice";
+import { AlertType } from "../src/enums/alert.enums";
 const RegisterModal = () => {
     const dispatch = useAppDispatch();
     const modal = useAppSelector(selectModal);
@@ -172,7 +174,7 @@ const RegisterModal = () => {
                   <button
                     type="button"
                     className="mt-2 h-12 sm:mt-0 sm:px-8 inline-flex w-full justify-center items-center rounded-md border border-gray-300 bg-white hover:bg-gray-50 px-4 py-2 text-base font-medium text-gray-700 shadow-sm focus:outline-none sm:ml-3 sm:w-32 sm:h-10 sm:text-sm"
-                    onClick={() => {dispatch(closeModal()); formik.resetForm()}}
+                    onClick={() => {dispatch(closeModal()); formik.resetForm(); dispatch(showAlert({type:AlertType.success, message:'Registracija pavyko sėkmingai'}))}}
                   >
                     Atšaukti
                   </button>
