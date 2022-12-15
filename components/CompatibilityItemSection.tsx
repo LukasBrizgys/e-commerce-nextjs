@@ -20,7 +20,7 @@ const CompatibilityItemSection = (props : ISection) => {
     <div className="w-full">
         <h2><strong>{props.heading}</strong></h2>
         <div className="bg-gray-100 border h-24 flex items-center p-2 gap-2">
-            <Image src={`/${props.selectedItem.ComponentPicture[0].Picture.name}`} width={75} height={75} alt={props.selectedItem.name}/>
+            <Image src={`https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/${props.selectedItem.ComponentPicture[0].Picture.name}`} width={75} height={75} alt={props.selectedItem.name}/>
             <div>{props.selectedItem.name}</div>
     
         </div>
