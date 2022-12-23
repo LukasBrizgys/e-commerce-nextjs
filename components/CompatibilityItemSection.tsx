@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { FullComponentWithFeatures } from "../src/types/Component.types";
 
 interface ISection {
@@ -12,18 +12,37 @@ interface ISection {
         category: number | null;
     }>>
 }
+
 const CompatibilityItemSection = (props : ISection) => {
+    const [open, setOpen] = useState<boolean>(false);
     return(
 
     
     props.selectedItem ?
-    <div className="w-full">
-        <h2><strong>{props.heading}</strong></h2>
-        <div className="bg-gray-100 border h-24 flex items-center p-2 gap-2">
-            <Image src={`https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/${props.selectedItem.ComponentPicture[0].Picture.name}`} width={75} height={75} alt={props.selectedItem.name}/>
-            <div>{props.selectedItem.name}</div>
-    
+    <div className="w-full bg-gray-100">
+        <h2 className="bg-white"><strong>{props.heading}</strong></h2>
+        <div className="bg-gray-100 border flex items-center p-2 gap-2 relative">
+            <Image src={`/${props.selectedItem.ComponentPicture[0].Picture.name}`} width={75} height={75} alt={props.selectedItem.name}/>
+            <div>
+                <div>{props.selectedItem.name}</div>
+                <svg onClick={() => setOpen(!open)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 absolute cursor-pointer left-1/2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+            </div>
+        
         </div>
+        {
+            open &&
+            <div className="flex w-full border rounded items-stretch justify-center p-2 gap-5">
+                {props.selectedItem.ComponentFeature.map((entry) => (
+                    <div className="flex flex-col w-full">
+                        <div className="w-full text-sm text-center">{entry.Feature.name}</div>
+                        <div className="w-14 h-24 text-center text-ellipsis text-sm overflow-hidden">{entry.value}</div>
+                    </div>
+                ))}
+            </div>
+        }
+
     </div>
      : 
     <div className="w-full">

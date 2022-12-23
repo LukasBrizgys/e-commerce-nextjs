@@ -63,9 +63,10 @@ export const addToCart = createAsyncThunk(
 )
 export const addToCartMultiple = createAsyncThunk(
     'cart/addToCartMultiple',
-    async(componentsToAdd : ComponentToAddOrUpdate[], {rejectWithValue}) => {
+    async(componentsToAdd : number[], {rejectWithValue}) => {
         try{
-
+            const response = await axios.post('/api/cartComponent/addMultiple', componentsToAdd);
+            return response.data;
         }catch(_error) {
             const error = (_error as AxiosError);
             return rejectWithValue(error.response?.data);
@@ -138,6 +139,7 @@ export const cartSlice = createSlice({
         .addCase(addToCart.pending, (state : CartState) => {
             state.loading = true;
         })
+        
         .addCase(getCartItems.fulfilled, (state : CartState, action) => {
             state.components = action.payload.message;
             state.totalPrice = calculateTotalPrice(action.payload.message);

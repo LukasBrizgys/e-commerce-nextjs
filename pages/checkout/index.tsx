@@ -97,7 +97,7 @@ const Checkout = (props: InferGetServerSidePropsType<typeof getServerSideProps>)
                             {
                                 props.cartComponents && props.cartComponents.map((component : CartComponent) => (
                                     <div key={component.componentId} className="flex">
-                                        <Image src={`https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/${component.Component.ComponentPicture[0].Picture.name}`} width="100" height="100" alt={component.Component.name}></Image>
+                                        <Image src={`/${component.Component.ComponentPicture[0].Picture.name}`} width="100" height="100" alt={component.Component.name}></Image>
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="text-center">{component.Component.name}</div>
                                             <div><strong>{Number(component.Component.Pricing[0].price) / 100}&euro; X {component.quantity} = {Number(component.Component.Pricing[0].price) * component.quantity / 100}&euro;</strong></div>

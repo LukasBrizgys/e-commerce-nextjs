@@ -1,4 +1,4 @@
-import { IAttributes, MultipleAdd } from "../../../pages/suderinamumas";
+import { IAttributes } from "../../../pages/suderinamumas";
 import { FullComponent, FullComponentWithFeatures } from "../../types/Component.types";
 import { prisma } from "../config/prismaConfig";
 interface IBrandQuery {
@@ -205,16 +205,49 @@ export const getCompatibleIds = async(category : number, compatibilities : IAttr
     }
     
 }
-export const addMultipleToCart = async(ids : MultipleAdd[], cartId : number) => {
+export const getComponentBySlug = async(slug : string | undefined) => {
+    const currentDate = new Date();
+    
     try{
-        await prisma.cartComponent.createMany({
-            data:[
-              
-
-            ]
+        if(!slug) throw new Error('No Slug');
+        const component = await prisma.component.findFirst({
+            include:{
+                Brand:true,
+                Category:true,
+                Pricing:{
+                    take:1,
+                    select:{
+                        price:true,
+                        originalPrice:true
+                    }
+                },
+                
+                ComponentPicture:{
+                    select:{
+                        Picture:{
+                            select:{name:true}
+                        }
+                    }
+                },
+                ComponentFeature:{
+                    select:{
+                        Feature:{
+                            select:{name:true}
+                        },
+                        value:true
+                    }
+                }
+            },
+            where:{
+                AND:[
+                    {Pricing:{every:{startDateTime:{lt:currentDate}, endDateTime:{ gt:currentDate }}}},
+                    {slug: slug}
+                    
+                ]
+            }
         })
-    }catch(err) {
-        console.log(err);
+        return component;
+    }catch(error) {
         return null;
     }
 }

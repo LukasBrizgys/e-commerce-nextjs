@@ -5,6 +5,7 @@ import axios from 'axios';
 import { FullComponentWithFeatures } from "../src/types/Component.types";
 import Image from "next/image";
 import Loader from "./Loader";
+import getNumber from "../src/utils/getNumber";
 interface ICompatibilityModal {
     isOpen : boolean
     setIsOpen : Dispatch<SetStateAction<{ isOpen: boolean, category: number | null}>>
@@ -19,10 +20,15 @@ const CompatibilityModal = (props: ICompatibilityModal) => {
     const newAttributes : {
         cpuSocket? : string,
         ramSlot? : string,
+        ramSlotCount? : number,
         moboForm? : string,
         caseForm? :string,
         sata? : string,
         m2? : string,
+        x1? : number,
+        x4? : number,
+        x8? : number,
+        x16? : number
     } = {}
     const addAttribute = (attributeArray: {value: string;Feature: {name: string;};}[], component : FullComponentWithFeatures) => {
         switch(props.category) {
@@ -65,7 +71,6 @@ const CompatibilityModal = (props: ICompatibilityModal) => {
                     break;
                 case 'Memory Type':
                     if(props.category === 3 || props.category === 2) newAttributes.ramSlot = attribute.value;
-                    
                     break;
                 case 'M.2 Port Type':
                     newAttributes.m2 = attribute.value;
@@ -76,6 +81,21 @@ const CompatibilityModal = (props: ICompatibilityModal) => {
                 case 'Motherboard Support':
                     newAttributes.moboForm = attribute.value
                     newAttributes.caseForm = attribute.value
+                    break;
+                case 'PCI Express x1':
+                    newAttributes.x1 = getNumber(attribute.value, undefined);
+                    break;
+                case 'PCI Express x4':
+                    newAttributes.x4 = getNumber(attribute.value, undefined);
+                    break;
+                case 'PCI Express x16':
+                    newAttributes.x16 = getNumber(attribute.value, undefined);
+                case 'PCI Express 5.0 x16':
+                    newAttributes.x16 = getNumber(attribute.value, undefined);
+                    break;
+                case 'Memory Slots':
+                    if(props.category === 2) newAttributes.ramSlotCount = !Number.isNaN(parseInt(attribute.value)) ? parseInt(attribute.value) : undefined;
+                    break;
             }
         })
         props.setAttribute({...props.attributes, ...newAttributes})
@@ -123,7 +143,7 @@ const CompatibilityModal = (props: ICompatibilityModal) => {
                     components.map((component) => (
                         <div className="flex gap-5 border p-2" key={component.id}>
                             <div className="flex">
-                                <Image src={`https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/${component.ComponentPicture[0].Picture.name}`} width={150} height={150} alt={component.name}/>
+                                <Image src={`/${component.ComponentPicture[0].Picture.name}`} width={150} height={150} alt={component.name}/>
                                 <div className="flex justify-center items-center">
                                     <div className="text-center"><strong>{component.name}</strong></div>
                                 </div>

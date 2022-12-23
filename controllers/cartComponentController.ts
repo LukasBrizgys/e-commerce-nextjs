@@ -1,7 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import catchAsyncErrors from "../src/lib/catchAsyncErrors";
-import {prisma} from '../src/db/config/prismaConfig';
-import {deleteCartComponent, findAllCartComponents, findCartComponentsByCartId, getAmountInCart, insertOrUpdateCartItem, updateCartComponentQuantity} from "../src/db/queries/cartComponent.queries";
+import {deleteCartComponent, findAllCartComponents, findCartComponentsByCartId, getAmountInCart, insertOrUpdateCartItem, updateCartComponentQuantity } from "../src/db/queries/cartComponent.queries";
 import {createServerSupabaseClient} from "@supabase/auth-helpers-nextjs";
 import {getCookie} from "cookies-next";
 import {getCartId} from "../src/db/queries/cart.queries";
@@ -39,24 +38,6 @@ const getAllCartComponentsByCartId = catchAsyncErrors(
             .send({status: '200', message: cartComponents})
     }
 )
-const addMultipleToCart = catchAsyncErrors(async(req : NextApiRequest, res : NextApiResponse) => {
-    const supabase = createServerSupabaseClient({req, res});
-    const sessionCookie = getCookie('sessionId', {req, res});
-    const user = await supabase
-        .auth
-        .getUser();
-    const cartId = await getCartId(
-        sessionCookie
-            ?.toString()!,
-        user.data.user
-    );
-    if (!cartId) 
-        return res
-            .status(400)
-            .send({status: '400', message: 'Cart not found'});
-
-    
-})
 const addCartComponent = catchAsyncErrors(async (req
 : NextApiRequest, res
 : NextApiResponse) => {

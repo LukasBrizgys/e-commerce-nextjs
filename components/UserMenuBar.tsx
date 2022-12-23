@@ -83,11 +83,11 @@ const UserMenuBar = () => {
                   </button>
               </Menu.Item>
               <Menu.Item>
-                  <button
+                  <Link href="/uzsakymai/"
                     className='hover:bg-teal-100 hover:bg-opacity-40 group flex w-full items-center rounded-md px-2 py-2 text-md font-medium'
                   >
                     Užsakymai
-                  </button> 
+                  </Link> 
               </Menu.Item>
               { user?.role === 'service_role' &&
                 <Menu.Item>
