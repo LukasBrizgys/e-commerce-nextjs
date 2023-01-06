@@ -37,7 +37,7 @@ const CheckoutForm = (props : ICheckoutForm) => {
         const result = await stripe.confirmPayment({
             elements,
             confirmParams:{
-                return_url:'http://localhost:3000/checkout/success',
+                return_url: process.env.NODE_ENV === 'development' ? 'http://localhost:3000/checkout/success' : 'https://e-commerce-nextjs-eight.vercel.app/checkout/success',
             }
         });
         if(result.error.type = "card_error" || result.error.type === "validation_error") {
