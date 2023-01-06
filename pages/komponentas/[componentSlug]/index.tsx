@@ -36,7 +36,7 @@ const ComponentPage = (props: InferGetServerSidePropsType<typeof getServerSidePr
         <div>
             <div className="w-full">
                 <div>
-                    <Carousel pictures={props.component.Picture} componentName={props.component.name}/>
+                    
                 </div>
             </div>
         </div>

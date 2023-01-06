@@ -58,7 +58,7 @@ const userOrders = (props: InferGetServerSidePropsType<typeof getServerSideProps
                 <tbody className="text-xl">
                     {
                     props.orders && props.orders.map((order : OrderWithStatus) => (
-                        <tr className="border-y p-3">
+                        <tr className="border-y p-3" key={Number(order.id)}>
                             <td>
                                 {order.id.toString(10)}
                             </td>

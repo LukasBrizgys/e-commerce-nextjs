@@ -35,7 +35,7 @@ const CompatibilityItemSection = (props : ISection) => {
             open &&
             <div className="flex w-full border rounded items-stretch justify-center p-2 gap-5">
                 {props.selectedItem.ComponentFeature.map((entry) => (
-                    <div className="flex flex-col w-full">
+                    <div className="flex flex-col w-full" key={entry.Feature.name}>
                         <div className="w-full text-sm text-center">{entry.Feature.name}</div>
                         <div className="w-14 h-24 text-center text-ellipsis text-sm overflow-hidden">{entry.value}</div>
                     </div>
