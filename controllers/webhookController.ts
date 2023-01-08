@@ -26,8 +26,18 @@ const captureCharge = catchAsyncErrors(async (req: NextApiRequest, res : NextApi
                 const data = event.data;
                 const paymentIntent : any = data.object
                 const componentArray : {componentId : number, quantity: number}[] = JSON.parse(paymentIntent.metadata.componentids);
-                const createdOrder = await prisma.order.create({
-                    data:{
+                const createdOrder = await prisma.order.upsert({
+                    where:{
+                        paymentIntentId: paymentIntent.id
+                    },
+                    create:{
+                        userId:paymentIntent.metadata.userId,
+                        paymentIntentId:paymentIntent.id,
+                        email: paymentIntent.metadata.email,
+                        totalPrice:paymentIntent.amount,
+                        statusId:1
+                    },
+                    update:{
                         userId:paymentIntent.metadata.userId,
                         paymentIntentId:paymentIntent.id,
                         email: paymentIntent.metadata.email,
