@@ -36,7 +36,7 @@ const CatalogItem = ({component} : ICatalogItem) => {
         <div className="mt-5 overflow-hidden rounded-xl pt-4 bg-white shadow-md duration-200 hover:scale-105 hover:shadow-xl flex-initial basis-72">
             <div className="p-4">
                 <div className="max-w-sm">
-                    <Image src={`/${component.ComponentPicture[0].Picture.name}`} alt={component.name} width="320" height="320"></Image>
+                    <Image src={process.env.NODE_ENV === 'development' ? `/${component.ComponentPicture[0].Picture.name}` : 'https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/' + component.ComponentPicture[0].Picture.name} alt={component.name} width="320" height="320"></Image>
                 </div>
                 <div className="h-28">
                     <Link href={`/komponentas/${component.slug}`} className="text-justify text-ellipsis hover:underline"><strong>{component.name}</strong></Link>

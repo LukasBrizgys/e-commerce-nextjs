@@ -15,7 +15,7 @@ const Carousel = (props : ICarousel) => {
             <div className="flex">
                     {
                         props.pictures.map((picture) => (
-                            <Image src={`/${picture.name}`} alt={props.componentName} width={120} height={120} key={picture.id}/>
+                            <Image src={process.env.NODE_ENV === 'development' ? `/${picture.name}` : 'https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/' + picture.name} alt={props.componentName} width={120} height={120} key={picture.id}/>
                         ))
                     }
             </div>

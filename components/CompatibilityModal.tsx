@@ -143,7 +143,7 @@ const CompatibilityModal = (props: ICompatibilityModal) => {
                     components.map((component) => (
                         <div className="flex gap-5 border p-2" key={component.id}>
                             <div className="flex">
-                                <Image src={`/${component.ComponentPicture[0].Picture.name}`} width={150} height={150} alt={component.name}/>
+                                <Image src={process.env.NODE_ENV === 'development' ? `/${component.ComponentPicture[0].Picture.name}` : 'https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/' + component.ComponentPicture[0].Picture.name} width={150} height={150} alt={component.name}/>
                                 <div className="flex justify-center items-center">
                                     <div className="text-center"><strong>{component.name}</strong></div>
                                 </div>

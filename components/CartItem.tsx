@@ -45,7 +45,7 @@ const CartItem = ({ component, mobile } : ICartItem) => {
             </svg>
 
             <div className="block">
-                <Image  src={`/${component.Component.ComponentPicture[0].Picture.name}`} width="150" height="150" alt={component.Component.name}></Image>
+                <Image src={process.env.NODE_ENV === 'development' ? `/${component.Component.ComponentPicture[0].Picture.name}` : 'https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/' + component.Component.ComponentPicture[0].Picture.name} width="150" height="150" alt={component.Component.name}></Image>
             </div>
             <div className="flex text-justify flex-col font-medium truncate mt-3 gap-3">
                 <a href="#" className="truncate hover:underline">{component.Component.name}</a>

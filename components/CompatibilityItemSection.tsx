@@ -22,7 +22,7 @@ const CompatibilityItemSection = (props : ISection) => {
     <div className="w-full bg-gray-100">
         <h2 className="bg-white"><strong>{props.heading}</strong></h2>
         <div className="bg-gray-100 border flex items-center p-2 gap-2 relative">
-            <Image src={`/${props.selectedItem.ComponentPicture[0].Picture.name}`} width={75} height={75} alt={props.selectedItem.name}/>
+            <Image src={process.env.NODE_ENV === 'development' ? `/${props.selectedItem.ComponentPicture[0].Picture.name}` : 'https://njkmajcfosaflafhlphb.supabase.co/storage/v1/object/public/pictures/' + props.selectedItem.ComponentPicture[0].Picture.name} width={75} height={75} alt={props.selectedItem.name}/>
             <div>
                 <div>{props.selectedItem.name}</div>
                 <svg onClick={() => setOpen(!open)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 absolute cursor-pointer left-1/2">
