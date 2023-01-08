@@ -39,8 +39,8 @@ const CompatibilityItemSection = (props : ISection) => {
                         <tr>
 
                         {
-                            props.selectedItem.ComponentFeature.map((entry) => (
-                                <th className="border">{entry.Feature.name}</th>
+                            props.selectedItem.ComponentFeature.map((entry, index) => (
+                                <th className="border" key={index}>{entry.Feature.name}</th>
                             ))
                         }
                        </tr> 
@@ -48,8 +48,8 @@ const CompatibilityItemSection = (props : ISection) => {
                     <tbody>
                         <tr>
                             {
-                                props.selectedItem.ComponentFeature.map((entry) => (
-                                    <td className="text-ellipsis break-words border">{entry.value}</td>
+                                props.selectedItem.ComponentFeature.map((entry,index) => (
+                                    <td key={index} className="text-ellipsis break-words border">{entry.value}</td>
                                 ))
                             }
                         </tr>
